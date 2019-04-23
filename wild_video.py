@@ -31,7 +31,7 @@ def ckpt_time(ckpt=None):
 
 time0 = ckpt_time()
 print('Loading 3D dataset...')
-# 这里改成自己的数据地址
+# input your own datapath
 dataset_path = 'data/data_3d_' + args.dataset + '.npz' #  dataset 'h36m'
 from common.h36m_dataset import Human36mDataset
 dataset = Human36mDataset(dataset_path) #'data/data_3d_h36m.npz'
@@ -45,7 +45,7 @@ metadata = suggest_metadata('detectron_pt_coco')
 print('Loading 2D detections keypoints ...')
 
 if args.input_npz:
-    #如果already exist keypoint npz file
+    #if already exist keypoint npz file
     npz = np.load(args.input_npz)
     keypoints = npz['kpts']
 else:
@@ -56,7 +56,7 @@ else:
 
 #  import ipdb;ipdb.set_trace()
 
-# 2 代表 keypoint, 3 代表 keypoint and probability score after softmax
+# 2 represent keypoint, 3 represent keypoint and probability score after softmax
 # 2 fit for cpn-pt-243.bin  //  3 for d-pt-243.bin
 input_num = 2
 keypoints = keypoints[:, :, :input_num]
@@ -64,13 +64,13 @@ keypoints = keypoints[:, :, :input_num]
 ckpt, time2 = ckpt_time(time1)
 print('load 2D dataset spend {:2f} second'.format(ckpt))
 
-# 载入 detectron_pt_coco格式，确定左右方向
+# load detectron_pt_coco, determine the left and right
 keypoints_symmetry = metadata['keypoints_symmetry']
 kps_left, kps_right = list(keypoints_symmetry[0]), list(keypoints_symmetry[1])
 joints_left, joints_right = list(dataset.skeleton().joints_left()), list(dataset.skeleton().joints_right())
 
 # normlization keypoints
-# 假设use the camera parameter
+# Ramdonly use the camera parameter
 cam = dataset.cameras()['S1'][0]
 keypoints[..., :2] = normalize_screen_coordinates(keypoints[..., :2], w=cam['res_w'], h=cam['res_h'])
 
