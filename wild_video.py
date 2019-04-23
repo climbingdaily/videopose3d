@@ -63,6 +63,7 @@ keypoints = keypoints[:, :, :input_num]
 ckpt, time2 = ckpt_time(time1)
 print('load 2D dataset spend {:2f} second'.format(ckpt))
 
+# 载入 detectron_pt_coco格式，确定左右方向
 keypoints_symmetry = metadata['keypoints_symmetry']
 kps_left, kps_right = list(keypoints_symmetry[0]), list(keypoints_symmetry[1])
 joints_left, joints_right = list(dataset.skeleton().joints_left()), list(dataset.skeleton().joints_right())
