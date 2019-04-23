@@ -32,7 +32,7 @@ def ckpt_time(ckpt=None):
 time0 = ckpt_time()
 print('Loading 3D dataset...')
 # input your own datapath
-dataset_path = 'data/data_3d_' + args.dataset + '.npz' #  dataset 'h36m'
+dataset_path = '/data/dyd/videopose/data_3d_' + args.dataset + '.npz' #  dataset 'h36m'
 from common.h36m_dataset import Human36mDataset
 dataset = Human36mDataset(dataset_path) #'data/data_3d_h36m.npz'
 
