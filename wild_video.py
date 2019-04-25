@@ -101,9 +101,9 @@ cam = dataset.cameras()['S2'][0]
 # sys.exit()
 keypoints[..., :2] = normalize_screen_coordinates(keypoints[..., :2], w=cam['res_w'], h=cam['res_h'])
 
-print(keypoints[:10])
+print(keypoints[:2])
 keypoints -= np.min(keypoints)
-print(keypoints[:10])
+print(keypoints[:2])
 sys.exit()
 
 model_pos = TemporalModel(17, input_num, 17,filter_widths=[3, 3, 3, 3, 3], causal=args.causal, dropout=args.dropout, channels=args.channels,
