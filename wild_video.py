@@ -60,8 +60,8 @@ else:
 # 2 fit for cpn-pt-243.bin  //  3 for d-pt-243.bin
 input_num = 2
 keypoints = keypoints[:, :, :input_num]
-print(keypoints[0:10])
-sys.exit()
+# print(keypoints[0:10])
+# sys.exit()
 
 ckpt, time2 = ckpt_time(time1)
 print('load 2D dataset spend {:2f} second'.format(ckpt))
