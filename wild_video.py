@@ -156,7 +156,7 @@ print(np.min(prediction[:, :, 2]))
 print('before\n', prediction[:2])
 prediction[:, :, 2] -= np.min(prediction[:, :, 2])
 print('after\n', prediction[:2])
-print('test\n', rediction[:, :, 2])
+print('test\n', prediction[:, :, 2])
 sys.exit()
 
 anim_output = {'Reconstruction': prediction}
