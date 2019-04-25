@@ -101,6 +101,11 @@ cam = dataset.cameras()['S2'][0]
 # sys.exit()
 keypoints[..., :2] = normalize_screen_coordinates(keypoints[..., :2], w=cam['res_w'], h=cam['res_h'])
 
+print(input_keypoints[:10])
+input_keypoints -= np.min(input_keypoints)
+print(input_keypoints[:10])
+sys.exit()
+
 model_pos = TemporalModel(17, input_num, 17,filter_widths=[3, 3, 3, 3, 3], causal=args.causal, dropout=args.dropout, channels=args.channels,
                             dense=args.dense)
 if torch.cuda.is_available():
@@ -141,8 +146,6 @@ prediction = camera_to_world(prediction, R=rot, t=tran)
 
 # We don't have the trajectory, but at least we can rebase the height
 prediction[:, :, 2] -= np.min(prediction[:, :, 2])
-print(prediction[:10])
-sys.exit()
 
 anim_output = {'Reconstruction': prediction}
 
