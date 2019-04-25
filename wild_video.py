@@ -95,10 +95,10 @@ joints_left, joints_right = list(dataset.skeleton().joints_left()), list(dataset
 
 # normlization keypoints
 # Ramdonly use the camera parameter
-cam = dataset.cameras()['S1'][0]
-for k,v in cam.items():
-    print(k, v)
-sys.exit()
+cam = dataset.cameras()['S2'][0]
+# for k,v in cam.items():
+#     print(k, v)
+# sys.exit()
 keypoints[..., :2] = normalize_screen_coordinates(keypoints[..., :2], w=cam['res_w'], h=cam['res_h'])
 
 model_pos = TemporalModel(17, input_num, 17,filter_widths=[3, 3, 3, 3, 3], causal=args.causal, dropout=args.dropout, channels=args.channels,
@@ -119,9 +119,6 @@ receptive_field = model_pos.receptive_field()
 pad = (receptive_field - 1) // 2 # Padding on each side
 causal_shift = 0
 
-
-
-
 print('Rendering...')
 #  import ipdb;ipdb.set_trace()
 input_keypoints = keypoints.copy()
@@ -131,14 +128,16 @@ gen = UnchunkedGenerator(None, None, [input_keypoints],
                             kps_left=kps_left, kps_right=kps_right, joints_left=joints_left, joints_right=joints_right)
 prediction = evaluate(gen, return_predictions=True)
 
-
 # If the ground truth is not available, take the camera extrinsic params from a random subject.
 # They are almost the same, and anyway, we only need this for visualization purposes.
-for subject in dataset.cameras():
-    if 'orientation' in dataset.cameras()[subject][args.viz_camera]:
-        rot = dataset.cameras()[subject][args.viz_camera]['orientation']
-        break
-prediction = camera_to_world(prediction, R=rot, t=0)
+# for subject in dataset.cameras():
+#     if 'orientation' in dataset.cameras()[subject][args.viz_camera]:
+#         rot = dataset.cameras()[subject][args.viz_camera]['orientation']
+#         break
+
+rot = cam['orientation']
+tran = cam['translation']
+prediction = camera_to_world(prediction, R=rot, t=tran)
 
 # We don't have the trajectory, but at least we can rebase the height
 prediction[:, :, 2] -= np.min(prediction[:, :, 2])
