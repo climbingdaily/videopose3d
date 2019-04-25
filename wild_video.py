@@ -1,4 +1,5 @@
 from common.visualization import render_animation
+from time import time
 import time
 import numpy as np
 
@@ -17,7 +18,6 @@ from common.model import *
 from common.loss import *
 from common.generators import ChunkedGenerator, UnchunkedGenerator
 from common.h36m_dataset import Human36mDataset
-from time import time
 
 from data.data_utils import suggest_metadata, suggest_pose_importer
 args = parse_args()
