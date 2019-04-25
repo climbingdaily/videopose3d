@@ -153,10 +153,10 @@ prediction = camera_to_world(prediction, R=rot, t=tran)
 
 # We don't have the trajectory, but at least we can rebase the height
 print(np.min(prediction[:, :, 2]))
-print(prediction[:2])
+print('before\n', prediction[:2])
 prediction[:, :, 2] -= np.min(prediction[:, :, 2])
-print(prediction[:2])
-print(prediction[:2,:2,2])
+print('after\n', prediction[:2])
+print('test\n', rediction[:, :, 2])
 sys.exit()
 
 anim_output = {'Reconstruction': prediction}
