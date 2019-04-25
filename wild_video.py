@@ -61,7 +61,7 @@ else:
 input_num = 2
 keypoints = keypoints[:, :, :input_num]
 print(keypoints[0:10])
-return
+sys.exit()
 
 ckpt, time2 = ckpt_time(time1)
 print('load 2D dataset spend {:2f} second'.format(ckpt))
