@@ -96,7 +96,7 @@ joints_left, joints_right = list(dataset.skeleton().joints_left()), list(dataset
 # normlization keypoints
 # Ramdonly use the camera parameter
 cam = dataset.cameras()['S1'][0]
-for k,v in cam.items()
+for k,v in cam.items():
     print(k, v)
 sys.exit()
 keypoints[..., :2] = normalize_screen_coordinates(keypoints[..., :2], w=cam['res_w'], h=cam['res_h'])
