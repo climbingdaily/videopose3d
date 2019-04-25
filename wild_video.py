@@ -74,6 +74,8 @@ joints_left, joints_right = list(dataset.skeleton().joints_left()), list(dataset
 # normlization keypoints
 # Ramdonly use the camera parameter
 cam = dataset.cameras()['S1'][0]
+print("cam = ", cam)
+sys.exit()
 keypoints[..., :2] = normalize_screen_coordinates(keypoints[..., :2], w=cam['res_w'], h=cam['res_h'])
 
 model_pos = TemporalModel(17, input_num, 17,filter_widths=[3, 3, 3, 3, 3], causal=args.causal, dropout=args.dropout, channels=args.channels,
