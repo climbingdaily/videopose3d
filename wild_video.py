@@ -14,8 +14,10 @@ from common.camera import *
 from common.model import *
 from common.loss import *
 from common.generators import ChunkedGenerator, UnchunkedGenerator
+from common.h36m_dataset import Human36mDataset
 from time import time
 
+from data.data_utils import suggest_metadata, suggest_pose_importer
 args = parse_args()
 print(args)
 
@@ -26,21 +28,41 @@ def ckpt_time(ckpt=None):
         return time.time()
     else:
         return time.time() - float(ckpt), time.time()
+# 2d to 3d
+def evaluate(test_generator, action=None, return_predictions=False):
+    with torch.no_grad():
+        model_pos.eval()
+        N = 0
+        for _, batch, batch_2d in test_generator.next_epoch():
+            inputs_2d = torch.from_numpy(batch_2d.astype('float32'))
+            if torch.cuda.is_available():
+                inputs_2d = inputs_2d.cuda()
 
+            # Positional model
+            predicted_3d_pos = model_pos(inputs_2d)
+
+
+            # Test-time augmentation (if enabled)
+            if test_generator.augment_enabled():
+                # Undo flipping and take average with non-flipped version
+                predicted_3d_pos[1, :, :, 0] *= -1
+                predicted_3d_pos[1, :, joints_left + joints_right] = predicted_3d_pos[1, :, joints_right + joints_left]
+                predicted_3d_pos = torch.mean(predicted_3d_pos, dim=0, keepdim=True)
+
+            if return_predictions:
+                return predicted_3d_pos.squeeze(0).cpu().numpy()
 
 
 time0 = ckpt_time()
 print('Loading 3D dataset...')
 # input your own datapath
 dataset_path = '/data/dyd/videopose/data_3d_' + args.dataset + '.npz' #  dataset 'h36m'
-from common.h36m_dataset import Human36mDataset
-dataset = Human36mDataset(dataset_path) #'data/data_3d_h36m.npz'
+dataset = Human36mDataset(dataset_path) #'/path/to/data_3d_h36m.npz'
 
 ckpt, time1 = ckpt_time(time0)
 print('load 3D dataset spend {:2f} second'.format(ckpt))
 
 # according to output name,generate some format. we use detectron
-from data.data_utils import suggest_metadata, suggest_pose_importer
 metadata = suggest_metadata('detectron_pt_coco')
 print('Loading 2D detections keypoints ...')
 
@@ -74,7 +96,8 @@ joints_left, joints_right = list(dataset.skeleton().joints_left()), list(dataset
 # normlization keypoints
 # Ramdonly use the camera parameter
 cam = dataset.cameras()['S1'][0]
-print("cam = ", cam)
+for k,v in cam.items()
+    print(k, v)
 sys.exit()
 keypoints[..., :2] = normalize_screen_coordinates(keypoints[..., :2], w=cam['res_w'], h=cam['res_h'])
 
@@ -97,29 +120,6 @@ pad = (receptive_field - 1) // 2 # Padding on each side
 causal_shift = 0
 
 
-
-def evaluate(test_generator, action=None, return_predictions=False):
-    with torch.no_grad():
-        model_pos.eval()
-        N = 0
-        for _, batch, batch_2d in test_generator.next_epoch():
-            inputs_2d = torch.from_numpy(batch_2d.astype('float32'))
-            if torch.cuda.is_available():
-                inputs_2d = inputs_2d.cuda()
-
-            # Positional model
-            predicted_3d_pos = model_pos(inputs_2d)
-
-
-            # Test-time augmentation (if enabled)
-            if test_generator.augment_enabled():
-                # Undo flipping and take average with non-flipped version
-                predicted_3d_pos[1, :, :, 0] *= -1
-                predicted_3d_pos[1, :, joints_left + joints_right] = predicted_3d_pos[1, :, joints_right + joints_left]
-                predicted_3d_pos = torch.mean(predicted_3d_pos, dim=0, keepdim=True)
-
-            if return_predictions:
-                return predicted_3d_pos.squeeze(0).cpu().numpy()
 
 
 print('Rendering...')

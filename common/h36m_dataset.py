@@ -79,7 +79,10 @@ h36m_cameras_extrinsic_params = {
         },
     ],
     'S2': [
-        {},
+        {
+            'orientation': [ 0.0664734, -0.0690535, 0.7416416, -0.6639132 ],
+            'translation': [ -2494.55,  -4719.03,  10980.00], 
+        },
         {},
         {},
         {},
@@ -215,6 +218,7 @@ class Human36mDataset(MocapDataset):
             for i, cam in enumerate(cameras):
                 cam.update(h36m_cameras_intrinsic_params[i])
                 for k, v in cam.items():
+                    # 参数数值化
                     if k not in ['id', 'res_w', 'res_h']:
                         cam[k] = np.array(v, dtype='float32')
 
