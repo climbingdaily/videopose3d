@@ -152,16 +152,15 @@ tran = cam['translation']
 prediction = camera_to_world(prediction, R=rot, t=tran)
 
 # We don't have the trajectory, but at least we can rebase the height
-print(np.min(prediction[:, :, 2]))
-print('before\n', prediction[:2])
-prediction[:, :, 2] -= np.min(prediction[:, :, 2])
-print('after\n', prediction[:2])
-print('test\n', prediction[:, :, 2])
-print('shape = ', prediction.shape)
-print(prediction.size)
-print(prediction.ndim)
-sys.exit()
-
+# print(np.min(prediction[:, :, 2]))
+# print('before\n', prediction[:2])
+# prediction[:, :, 2] -= np.min(prediction[:, :, 2])
+# print('after\n', prediction[:2])
+# print('test\n', prediction[:, :, 2])
+# print('shape = ', prediction.shape)
+# print(prediction.size)
+# print(prediction.ndim)
+# sys.exit()
 anim_output = {'Reconstruction': prediction}
 
 ckpt, time4 = ckpt_time(time3)
@@ -173,14 +172,12 @@ input_keypoints = image_coordinates(
 # set default fps = 25 dataset.fps()  = 25
 #  import ipdb;ipdb.set_trace()
 
-render_animation(input_keypoints, anim_output,
-                 dataset.skeleton(
-                 ), 25, args.viz_bitrate, cam['azimuth'], args.viz_output,
+render_anim
+ation(input_keypoints, anim_output, dataset.skeleton(), 25, args.viz_bitrate, cam['azimuth'], args.viz_output,
                  limit=args.viz_limit, downsample=args.viz_downsample, size=args.viz_size,
                  input_video_path=args.viz_video, viewport=(
                      cam['res_w'], cam['res_h']),
                  input_video_skip=args.viz_skip)
-
 
 ckpt, time5 = ckpt_time(time4)
 if args.viz_limit < 1:
