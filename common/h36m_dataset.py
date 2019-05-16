@@ -18,13 +18,13 @@ h36m_skeleton = Skeleton(parents=[-1,  0,  1,  2,  3,  4,  0,  6,  7,  8,  9,  0
 
 h36m_cameras_intrinsic_params = [
     {
-        'id': '54138969',
-        'center': [512.54150390625, 515.4514770507812],
-        'focal_length': [1145.0494384765625, 1143.7811279296875],
-        'radial_distortion': [-0.20709891617298126, 0.24777518212795258, -0.0030751503072679043],
-        'tangential_distortion': [-0.0009756988729350269, -0.00142447161488235],
-        'res_w': 1000,
-        'res_h': 1002,
+        'id': 'Equipmentroom',
+        'center': [637.7803726218278, 348.9258589232085],
+        'focal_length': [1085.034969584061, 1074.87375091483],
+        'radial_distortion': [-0.6146041577158135, 2.943244371054735, -0.01046172477629367],
+        'tangential_distortion': [-0.001500509892006872, -10.76931280028193],
+        'res_w': 1280,
+        'res_h': 720,
         'azimuth': 70, # Only used for visualization
     },
     {
@@ -79,7 +79,10 @@ h36m_cameras_extrinsic_params = {
         },
     ],
     'S2': [
-        {},
+        {
+            'orientation': [ 0.0664734, -0.0690535, 0.7416416, -0.6639132 ],
+            'translation': [ -2494.55,  -4719.03,  10980.00], 
+        },
         {},
         {},
         {},
@@ -215,6 +218,7 @@ class Human36mDataset(MocapDataset):
             for i, cam in enumerate(cameras):
                 cam.update(h36m_cameras_intrinsic_params[i])
                 for k, v in cam.items():
+                    # 参数数值化
                     if k not in ['id', 'res_w', 'res_h']:
                         cam[k] = np.array(v, dtype='float32')
 
