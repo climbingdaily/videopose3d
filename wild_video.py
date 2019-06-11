@@ -62,7 +62,7 @@ def evaluate(test_generator, action=None, return_predictions=False):
 time0 = ckpt_time()
 print('Loading 3D dataset...')
 # input your own datapath
-dataset_path = '/data/dyd/videopose/data_3d_' + \
+dataset_path = '../data/videopose/data_3d_' + \
     args.dataset + '.npz'  # dataset 'h36m'
 dataset = Human36mDataset(dataset_path)  # '/path/to/data_3d_h36m.npz'
 
@@ -110,7 +110,7 @@ cam = dataset.cameras()['S2'][0]
 keypoints[..., :2] = normalize_screen_coordinates(
     keypoints[..., :2], w=cam['res_w'], h=cam['res_h'])
 
-model_pos = TemporalModel(17, input_num, 17, filter_widths=[3, 3, 3, 3, 3], causal=args.causal, dropout=args.dropout, channels=args.channels,
+model_pos = TemporalModel(17, input_num, 17, filter_widths=[3, 3, 3, 3], causal=args.causal, dropout=args.dropout, channels=args.channels,
                           dense=args.dense)
 if torch.cuda.is_available():
     model_pos = model_pos.cuda()
@@ -172,8 +172,7 @@ input_keypoints = image_coordinates(
 # set default fps = 25 dataset.fps()  = 25
 #  import ipdb;ipdb.set_trace()
 
-render_anim
-ation(input_keypoints, anim_output, dataset.skeleton(), 25, args.viz_bitrate, cam['azimuth'], args.viz_output,
+render_animation(input_keypoints, anim_output, dataset.skeleton(), 25, args.viz_bitrate, cam['azimuth'], args.viz_output,
                  limit=args.viz_limit, downsample=args.viz_downsample, size=args.viz_size,
                  input_video_path=args.viz_video, viewport=(
                      cam['res_w'], cam['res_h']),
