@@ -108,7 +108,7 @@ cam = dataset.cameras()['S2'][0]
 keypoints[..., :2] = normalize_screen_coordinates(
     keypoints[..., :2], w=cam['res_w'], h=cam['res_h'])
 
-model_pos = TemporalModel(17, input_num, 17, filter_widths=[3, 3, 3, 3, 3], causal=args.causal, dropout=args.dropout, channels=args.channels,
+model_pos = TemporalModel(17, input_num, 17, filter_widths=[3, 3, 3], causal=args.causal, dropout=args.dropout, channels=args.channels,
                           dense=args.dense)
 if torch.cuda.is_available():
     model_pos = model_pos.cuda()
