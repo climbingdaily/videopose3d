@@ -10,7 +10,7 @@ import copy
 from common.skeleton import Skeleton
 from common.mocap_dataset import MocapDataset
 from common.camera import normalize_screen_coordinates, image_coordinates
-
+       
 h36m_skeleton = Skeleton(parents=[-1,  0,  1,  2,  3,  4,  0,  6,  7,  8,  9,  0, 11, 12, 13, 14, 12,
        16, 17, 18, 19, 20, 19, 22, 12, 24, 25, 26, 27, 28, 27, 30],
        joints_left=[6, 7, 8, 9, 10, 16, 17, 18, 19, 20, 21, 22, 23],
@@ -18,13 +18,13 @@ h36m_skeleton = Skeleton(parents=[-1,  0,  1,  2,  3,  4,  0,  6,  7,  8,  9,  0
 
 h36m_cameras_intrinsic_params = [
     {
-        'id': 'Equipmentroom',
-        'center': [637.7803726218278, 348.9258589232085],
-        'focal_length': [1085.034969584061, 1074.87375091483],
-        'radial_distortion': [-0.6146041577158135, 2.943244371054735, -0.01046172477629367],
-        'tangential_distortion': [-0.001500509892006872, -10.76931280028193],
-        'res_w': 1280,
-        'res_h': 720,
+        'id': '54138969',
+        'center': [512.54150390625, 515.4514770507812],
+        'focal_length': [1145.0494384765625, 1143.7811279296875],
+        'radial_distortion': [-0.20709891617298126, 0.24777518212795258, -0.0030751503072679043],
+        'tangential_distortion': [-0.0009756988729350269, -0.00142447161488235],
+        'res_w': 1000,
+        'res_h': 1002,
         'azimuth': 70, # Only used for visualization
     },
     {
@@ -79,10 +79,7 @@ h36m_cameras_extrinsic_params = {
         },
     ],
     'S2': [
-        {
-            'orientation': [ 0.0664734, -0.0690535, 0.7416416, -0.6639132 ],
-            'translation': [ -2494.55,  -4719.03,  10980.00], 
-        },
+        {},
         {},
         {},
         {},
@@ -212,31 +209,30 @@ h36m_cameras_extrinsic_params = {
 class Human36mDataset(MocapDataset):
     def __init__(self, path, remove_static_joints=True):
         super().__init__(fps=50, skeleton=h36m_skeleton)
-
+        
         self._cameras = copy.deepcopy(h36m_cameras_extrinsic_params)
         for cameras in self._cameras.values():
             for i, cam in enumerate(cameras):
                 cam.update(h36m_cameras_intrinsic_params[i])
                 for k, v in cam.items():
-                    # 参数数值化
                     if k not in ['id', 'res_w', 'res_h']:
                         cam[k] = np.array(v, dtype='float32')
-
+                
                 # Normalize camera frame
                 cam['center'] = normalize_screen_coordinates(cam['center'], w=cam['res_w'], h=cam['res_h']).astype('float32')
                 cam['focal_length'] = cam['focal_length']/cam['res_w']*2
                 if 'translation' in cam:
                     cam['translation'] = cam['translation']/1000 # mm to meters
-
+                
                 # Add intrinsic parameters vector
                 cam['intrinsic'] = np.concatenate((cam['focal_length'],
                                                    cam['center'],
                                                    cam['radial_distortion'],
                                                    cam['tangential_distortion']))
-
+        
         # Load serialized dataset
-        data = np.load(path, allow_pickle = True)['positions_3d'].item()
-
+        data = np.load(path)['positions_3d'].item()
+        
         self._data = {}
         for subject, actions in data.items():
             self._data[subject] = {}
@@ -245,16 +241,15 @@ class Human36mDataset(MocapDataset):
                     'positions': positions,
                     'cameras': self._cameras[subject],
                 }
-
-        #  import ipdb;ipdb.set_trace()
+                
         if remove_static_joints:
             # Bring the skeleton to 17 joints instead of the original 32
             self.remove_joints([4, 5, 9, 10, 11, 16, 20, 21, 22, 23, 24, 28, 29, 30, 31])
-
+            
             # Rewire shoulders to the correct parents
             self._skeleton._parents[11] = 8
             self._skeleton._parents[14] = 8
-
+            
     def supports_semi_supervised(self):
         return True
-
+   
