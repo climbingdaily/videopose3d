@@ -62,8 +62,7 @@ def evaluate(test_generator, action=None, return_predictions=False):
 time0 = ckpt_time()
 print('Loading 3D dataset...')
 # input your own datapath
-dataset_path = '../data/videopose/data_3d_' + \
-    args.dataset + '.npz'  # dataset 'h36m'
+dataset_path = 'data/data_3d_' + args.dataset + '.npz'  # dataset 'h36m'
 dataset = Human36mDataset(dataset_path)  # '/path/to/data_3d_h36m.npz'
 
 ckpt, time1 = ckpt_time(time0)
@@ -108,7 +107,7 @@ cam = dataset.cameras()['S2'][0]
 keypoints[..., :2] = normalize_screen_coordinates(
     keypoints[..., :2], w=cam['res_w'], h=cam['res_h'])
 
-model_pos = TemporalModel(17, input_num, 17, filter_widths=[3, 3, 3], causal=args.causal, dropout=args.dropout, channels=args.channels,
+model_pos = TemporalModel(17, input_num, 17, filter_widths=[3, 3, 3, 3, 3], causal=args.causal, dropout=args.dropout, channels=args.channels,
                           dense=args.dense)
 if torch.cuda.is_available():
     model_pos = model_pos.cuda()
@@ -140,14 +139,14 @@ prediction = evaluate(gen, return_predictions=True)
 
 # If the ground truth is not available, take the camera extrinsic params from a random subject.
 # They are almost the same, and anyway, we only need this for visualization purposes.
-# for subject in dataset.cameras():
-#     if 'orientation' in dataset.cameras()[subject][args.viz_camera]:
-#         rot = dataset.cameras()[subject][args.viz_camera]['orientation']
-#         break
+for subject in dataset.cameras():
+    if 'orientation' in dataset.cameras()[subject][args.viz_camera]:
+        rot = dataset.cameras()[subject][args.viz_camera]['orientation']
+        break
 
-rot = cam['orientation']
-tran = cam['translation']
-prediction = camera_to_world(prediction, R=rot, t=tran)
+# rot = cam['orientation']
+# tran = cam['translation']
+prediction = camera_to_world(prediction, R=rot, t=0)
 
 # We don't have the trajectory, but at least we can rebase the height
 # print(np.min(prediction[:, :, 2]))
