@@ -139,12 +139,12 @@ prediction = evaluate(gen, return_predictions=True)
 
 # If the ground truth is not available, take the camera extrinsic params from a random subject.
 # They are almost the same, and anyway, we only need this for visualization purposes.
-for subject in dataset.cameras():
-    if 'orientation' in dataset.cameras()[subject][args.viz_camera]:
-        rot = dataset.cameras()[subject][args.viz_camera]['orientation']
-        break
+# for subject in dataset.cameras():
+#     if 'orientation' in dataset.cameras()[subject][args.viz_camera]:
+#         rot = dataset.cameras()[subject][args.viz_camera]['orientation']
+#         break
 
-# rot = cam['orientation']
+rot = cam['orientation']
 # tran = cam['translation']
 prediction = camera_to_world(prediction, R=rot, t=0)
 
